@@ -177,18 +177,6 @@
 <body>
     <div id="window-top-bar"></div>
     
-    <!-- Lock Screen -->
-    <div id="lock-screen" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#0f1115] transition-opacity duration-500">
-        <div class="bg-[#161a22] border border-red-500/30 shadow-[0_0_25px_rgba(220,38,38,0.15)] p-8 rounded-xl flex flex-col items-center max-w-sm w-full transition-all">
-            <i class="fa-solid fa-lock text-red-500 text-4xl mb-4 drop-shadow-[0_0_10px_rgba(220,38,38,0.6)]"></i>
-            <h2 class="text-white text-xl font-bold mb-6 tracking-widest drop-shadow-[0_0_5px_rgba(220,38,38,0.3)]">SYSTEM LOCKED</h2>
-            <div class="w-full flex gap-2">
-                <input type="password" id="pin-input" class="flex-1 bg-[#0f1115] border border-[#2a3142] text-white text-center text-lg rounded px-4 py-2 outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-300" placeholder="Masukkan PIN" autocomplete="off">
-                <button id="pin-submit" class="bg-[#1e2430] hover:bg-[#2d3748] border border-[#2a3142] hover:border-red-500/50 text-white rounded px-6 py-2 transition-all duration-300 focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(220,38,38,0.4)] font-bold"><i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-            <p id="pin-error" class="text-red-500 text-xs mt-3 opacity-0 transition-opacity drop-shadow-[0_0_5px_rgba(220,38,38,0.5)]">Akses Ditolak. PIN Salah.</p>
-        </div>
-    </div>
 
     <div id="notification-modal">Pesan Notifikasi</div>
 
@@ -430,19 +418,25 @@
                     <option value="60000000">60 Mbps (Kualitas 4K)</option>
                     <option value="100000000">100 Mbps (Ultra HD)</option>
                 </select>
+                <select id="renderAudioBitrateSelect" class="custom-select w-[62px] ml-1" title="Bitrate audio. Bila browser tak mendukung (mis. AAC Windows maks 192k), otomatis turun ke bitrate tertinggi yang didukung.">
+                    <option value="128000">🔊128k</option>
+                    <option value="192000" selected>🔊192k</option>
+                    <option value="256000">🔊256k</option>
+                    <option value="320000">🔊320k</option>
+                </select>
                 <select id="renderMethodSelect" class="custom-select w-20 ml-1">
                     <option value="pisah">Pisah File</option>
                     <option value="gabung" selected>Gabung 1 Vid</option>
                 </select>
             </div>
             
-            <div id="uniqueness-container" class="flex flex-col ml-2 justify-center w-28 bg-gray-800/50 p-1 rounded border border-gray-700" title="Capai 80-100% (Hijau) agar aman untuk monetisasi YouTube">
+            <div id="uniqueness-container" class="flex flex-col ml-2 justify-center w-28 bg-gray-800/50 p-1 rounded border border-gray-700" title="Jumlah efek visual yang aktif. Ini BUKAN jaminan lolos kebijakan konten berulang (reused content) YouTube — yang dinilai YouTube adalah nilai orisinal kontennya.">
                 <div class="flex justify-between w-full mb-[2px] items-center">
-                    <span class="text-[8px] font-bold text-gray-400 tracking-wider">UNIK:</span>
-                    <span id="uniqueness-text" class="text-[9px] font-bold text-red-500">0%</span>
+                    <span class="text-[8px] font-bold text-gray-400 tracking-wider">EFEK AKTIF:</span>
+                    <span id="uniqueness-text" class="text-[9px] font-bold text-blue-400">0%</span>
                 </div>
                 <div class="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                    <div id="uniqueness-bar" class="h-full bg-red-500 transition-all duration-500" style="width: 0%;"></div>
+                    <div id="uniqueness-bar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%;"></div>
                 </div>
             </div>
 
@@ -1306,26 +1300,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const lockScreen = document.getElementById('lock-screen');
-            const pinInput = document.getElementById('pin-input');
-            const pinSubmit = document.getElementById('pin-submit');
-            const pinError = document.getElementById('pin-error');
-            function checkPin() {
-                if (pinInput.value === '0') {
-                    lockScreen.style.opacity = '0';
-                    setTimeout(() => { lockScreen.style.display = 'none'; }, 500);
-                } else {
-                    pinInput.classList.add('shake-anim', 'border-red-500');
-                    pinError.style.opacity = '1';
-                    setTimeout(() => { pinInput.classList.remove('shake-anim'); }, 300);
-                    setTimeout(() => { pinInput.classList.remove('border-red-500'); pinError.style.opacity = '0'; }, 2000);
-                    pinInput.value = ''; pinInput.focus();
-                }
-            }
-            pinSubmit.addEventListener('click', checkPin);
-            pinInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPin(); });
-            pinInput.addEventListener('input', () => { if (pinInput.value === '0') checkPin(); });
-            pinInput.focus();
             
             // Inisialisasi Minimize Panel dengan aman
             document.querySelectorAll('.sidebar-left .panel').forEach((panel, index) => {
@@ -1354,7 +1328,7 @@
             progressBarFx: { enabled: false, style: 'outline', showTime: true, showTitle: true, showControls: true, font: 'Inter', color: '#ffffff', progressColor: '#ffffff', width: 0.8, thickness: 4, offsetX: 0, offsetY: -100, reactive: false, particles: false, colorMode: 'statis', argbSpeed: 15 },
             playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, blinkMode: 'normal', scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5, icon: 'none', iconColor: '#dc2626', maskEnabled: false, maskDirection: 'left_right', maskOpacity: 0.7, maskColor: '#000000', maskPrecision: 1.0, upNextToast: false },
             lyrics: { enabled: true, font: 'Inter', transform: 'capitalize', size: 36, posY: 150, delay: 0, colorBase: '#ffffff', colorActive: '#facc15', effect: 'shadow', animMode: 'scroll', interludeFade: 0, syncSpeed: 1.0 },
-            render: { res: 1080, fps: 30, bitrateMode: 'variable', targetBitrate: 5000000, method: 'gabung' }
+            render: { res: 1080, fps: 30, bitrateMode: 'variable', targetBitrate: 5000000, audioBitrate: 192000, method: 'gabung' }
         };
 
         let bboxes = { viz: null, viz2: null, overlay: null, text: null, time: null, playlist: null, lyrics: null, progressBar: null, popup: null };
@@ -1440,6 +1414,7 @@
         bindButtonGroup('renderBitrateModeGroup', 'render', 'bitrateMode');
         
         document.getElementById('renderBitrateSelect').addEventListener('change', (e) => { state.render.targetBitrate = parseInt(e.target.value); });
+        document.getElementById('renderAudioBitrateSelect').addEventListener('change', (e) => { state.render.audioBitrate = parseInt(e.target.value); });
         document.getElementById('renderMethodSelect').addEventListener('change', (e) => { state.render.method = e.target.value; });
         document.getElementById('renderResSelect').addEventListener('change', (e) => { state.render.res = parseInt(e.target.value); resizeCanvas(); });
         document.getElementById('renderFpsSelect').addEventListener('change', (e) => { state.render.fps = parseInt(e.target.value); });
@@ -1752,16 +1727,29 @@
                 const data = await res.json();
                 
                 // Cari data yang memiliki lirik mentah (plainLyrics) atau lirik waktu (syncedLyrics)
-                const match = data.find(item => item.plainLyrics || item.syncedLyrics);
-                
+                // Pilih hasil terbaik: utamakan lirik tersinkron (LRC) yang durasinya cocok dengan lagu (selisih <= 3 dtk)
+                const trackDur = (currentTrackIndex >= 0 && audioElement && isFinite(audioElement.duration)) ? audioElement.duration : null;
+                const durDiff = item => (trackDur && item.duration) ? Math.abs(item.duration - trackDur) : Infinity;
+                const durOk = item => trackDur === null || durDiff(item) <= 3;
+                const candidates = (Array.isArray(data) ? data : []).filter(item => item.plainLyrics || item.syncedLyrics);
+                const rank = item => (item.syncedLyrics && durOk(item) ? 0 : 2) + (durOk(item) ? 0 : 1);
+                candidates.sort((a, b) => rank(a) - rank(b) || durDiff(a) - durDiff(b));
+                const match = candidates[0];
+
                 if (match) {
-                    let raw = match.plainLyrics;
-                    
-                    // Jika plainLyrics tidak ada, ambil syncedLyrics tapi HAPUS semua format waktunya
-                    if (!raw && match.syncedLyrics) {
-                        raw = match.syncedLyrics.replace(/\[\d{2,}:\d{2}\.\d{1,3}\]/g, '').trim();
-                        // Bersihkan spasi kosong antar baris yang berlebih
-                        raw = raw.replace(/\n\s*\n/g, '\n');
+                    let raw; let doneMsg;
+                    if (match.syncedLyrics && durOk(match)) {
+                        // Lirik sudah lengkap dengan waktu -> langsung siap tampil, tak perlu sync manual
+                        raw = match.syncedLyrics.trim();
+                        doneMsg = trackDur ? `Lirik tersinkron ditemukan (durasi cocok, selisih ${durDiff(match) === Infinity ? '?' : durDiff(match).toFixed(1) + ' dtk'})!` : "Lirik tersinkron ditemukan!";
+                    } else {
+                        // Tak ada versi tersinkron yang cocok -> ambil teks bersih untuk di-sync manual
+                        raw = match.plainLyrics;
+                        if (!raw && match.syncedLyrics) {
+                            raw = match.syncedLyrics.replace(/\[\d{2,}:\d{2}\.\d{1,3}\]/g, '').trim();
+                            raw = raw.replace(/\n\s*\n/g, '\n');
+                        }
+                        doneMsg = (match.syncedLyrics && !durOk(match)) ? "Durasi versi tersinkron tidak cocok — teks lirik bersih diunduh, silakan sync manual." : "Teks lirik bersih berhasil diunduh!";
                     }
 
                     if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
@@ -1781,7 +1769,7 @@
                         }
                         
                         updateLyricsStatus();
-                        showNotification("Teks lirik bersih berhasil diunduh!");
+                        showNotification(doneMsg);
                     } else {
                         showNotification("Pilih lagu di playlist terlebih dahulu!");
                         statusTxt.textContent = "Belum ada lagu dipilih."; statusTxt.className = "text-xs text-red-500 font-bold";
@@ -2730,8 +2718,12 @@
         // padahal pembuatan encoder gagal (PC tanpa encoder H.264 hardware). Uji 1 frame, lalu jatuh ke software.
         // AAC tidak tersedia di semua browser (mis. Chromium/Linux); jatuh ke Opus-dalam-MP4 daripada render gagal
         async function pickAudioCodec(sampleRate, numberOfChannels) {
+            const wanted = state.render.audioBitrate || 192000;
+            const rates = [wanted, 256000, 192000, 160000, 128000].filter((r, i, a) => r <= wanted && a.indexOf(r) === i);
             for (const c of [{ enc: 'mp4a.40.2', mux: 'aac' }, { enc: 'opus', mux: 'opus' }]) {
-                try { if ((await AudioEncoder.isConfigSupported({ codec: c.enc, sampleRate, numberOfChannels, bitrate: 128000 })).supported) return c; } catch (e) {}
+                for (const bitrate of rates) {
+                    try { if ((await AudioEncoder.isConfigSupported({ codec: c.enc, sampleRate, numberOfChannels, bitrate })).supported) return { ...c, bitrate }; } catch (e) {}
+                }
             }
             throw new Error('Browser ini tidak mendukung encoder audio AAC/Opus');
         }
@@ -2821,7 +2813,7 @@
                 videoEncoder.configure(vConfig);
 
                 audioEncoder = new AudioEncoder({ output: (chunk, meta) => { if (abortOfflineRender) return; try { muxer.addAudioChunk(chunk, meta); } catch(e) { renderErrorMsg = renderErrorMsg || ('Muxer audio: ' + e.message); abortOfflineRender = true; } }, error: (e) => { renderErrorMsg = renderErrorMsg || ('Encoder audio: ' + e.message); abortOfflineRender = true; } });
-                audioEncoder.configure({ codec: audioPick.enc, sampleRate: targetSampleRate, numberOfChannels: numChannels, bitrate: 128000 });
+                audioEncoder.configure({ codec: audioPick.enc, sampleRate: targetSampleRate, numberOfChannels: numChannels, bitrate: audioPick.bitrate });
 
                 if (typeof OffscreenCanvas !== 'undefined') { canvas = new OffscreenCanvas(targetWidth, targetHeight); } else { canvas = document.createElement('canvas'); canvas.width = targetWidth; canvas.height = targetHeight; }
                 ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
@@ -3025,7 +3017,7 @@
                 videoEncoder.configure(vConfigSingle);
 
                 audioEncoder = new AudioEncoder({ output: (chunk, meta) => { try { muxer.addAudioChunk(chunk, meta); } catch(e) { renderErrorMsg = renderErrorMsg || ('Muxer audio: ' + e.message); abortOfflineRender = true; } }, error: (e) => { renderErrorMsg = renderErrorMsg || ('Encoder audio: ' + e.message); abortOfflineRender = true; } });
-                audioEncoder.configure({ codec: audioPick.enc, sampleRate: targetSampleRate, numberOfChannels: numChannels, bitrate: 128000 });
+                audioEncoder.configure({ codec: audioPick.enc, sampleRate: targetSampleRate, numberOfChannels: numChannels, bitrate: audioPick.bitrate });
                 
                 async function processAudio(audioBuf, enc) {
                     const totalFrames = audioBuf.length; const framesPerChunk = 4096; 
@@ -4495,7 +4487,7 @@
             const btnPBold = document.getElementById('btnPlaylistBold'); if(btnPBold) { if(state.playlistFx.bold) btnPBold.classList.add('btn-active'); else btnPBold.classList.remove('btn-active'); }
             
             setVal('renderMethodSelect', state.render.method); setBtn('renderBitrateModeGroup', state.render.bitrateMode); setVal('renderBitrateSelect', state.render.targetBitrate);
-            setVal('renderResSelect', state.render.res); setVal('renderFpsSelect', state.render.fps);
+            setVal('renderResSelect', state.render.res); setVal('renderFpsSelect', state.render.fps); setVal('renderAudioBitrateSelect', state.render.audioBitrate || 192000);
 
             document.querySelectorAll('input[type=range]:not([data-no-indicator])').forEach(slider => { const span = slider.parentElement.querySelector('.val-indicator'); if (span) span.textContent = slider.value; });
             if (state.textFx.colorMode === 'auto') { document.getElementById('textStaticColorGroup').style.display = 'none'; document.getElementById('textArgbSpeedGroup').style.display = 'flex'; } else { document.getElementById('textStaticColorGroup').style.display = 'flex'; document.getElementById('textArgbSpeedGroup').style.display = 'none'; }
@@ -4679,16 +4671,8 @@
                     bar.style.width = score + '%';
                     txt.textContent = score + '%';
                     
-                    if (score < 50) {
-                        bar.style.backgroundColor = '#ef4444'; 
-                        txt.style.color = '#ef4444';
-                    } else if (score < 80) {
-                        bar.style.backgroundColor = '#eab308'; 
-                        txt.style.color = '#eab308';
-                    } else {
-                        bar.style.backgroundColor = '#22c55e'; 
-                        txt.style.color = '#22c55e';
-                    }
+                    // Warna netral: angka ini hanya hitungan efek, bukan indikator aman/tidak untuk monetisasi
+                    bar.style.backgroundColor = '#3b82f6'; txt.style.color = '#60a5fa';
                 }
             } catch (e) {
                 console.log("Menunggu state memuat...");
