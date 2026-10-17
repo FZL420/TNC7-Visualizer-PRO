@@ -126,17 +126,31 @@
         select.custom-select { cursor: pointer; }
         input[type=text].custom-input:focus, input[type=number].custom-input:focus { border-color: var(--text-secondary); }
 
-        .top-bar { height: 40px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 16px; justify-content: space-between; background-color: var(--bg-main); flex-shrink: 0; }
-        .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .top-bar { min-height: 44px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 5px 12px; justify-content: space-between; background-color: var(--bg-main); flex-shrink: 0; }
+        .logo { font-weight: 900; font-size: 1.05rem; display: flex; align-items: center; gap: 7px; white-space: nowrap; flex-shrink: 0; }
+        /* Navbar: grup rapi, teks tak pernah pecah baris */
+        .tb-groups { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 6px 6px; min-width: 0; }
+        .tb-group { display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-panel); }
+        .tb-btn { height: 26px; padding: 0 9px; border-radius: 5px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: background-color .15s, border-color .15s; }
+        .tb-btn:hover { background: var(--btn-hover); }
+        .tb-btn.icon-only { width: 26px; padding: 0; justify-content: center; }
+        .tb-btn.danger { color: #f87171; }
+        .tb-btn.danger:hover { background: rgba(220,38,38,.15); border-color: rgba(220,38,38,.5); }
+        .tb-btn.btn-active { background-color: #facc15; border-color: #facc15; color: #0f1115; font-weight: 700; }
+        .tb-select { appearance: none; height: 26px; padding: 0 18px 0 7px; border-radius: 5px; font-size: 0.7rem; white-space: nowrap; background: var(--bg-main) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%2394a3b8'/%3E%3C/svg%3E") no-repeat right 7px center; border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; outline: none; }
+        .tb-select:focus { border-color: var(--text-secondary); }
+        .tb-label { font-size: 0.6rem; font-weight: 700; letter-spacing: .06em; color: var(--text-secondary); padding: 0 2px 0 4px; white-space: nowrap; }
+        .tb-render { height: 30px; padding: 0 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; background: #dc2626; border: 1px solid #ef4444; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .tb-render:hover { background: #b91c1c; }
         .logo-text-viz { color: #facc15; }
 
-        .workspace { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 40px); }
+        .workspace { display: flex; flex: 1 1 0; overflow: hidden; min-height: 0; }
         .sidebar-left { width: 320px; background-color: var(--bg-main); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; padding: 4px; padding-bottom: 80px; gap: 4px; flex-shrink: 0; }
         .sidebar-right { width: 280px; background-color: var(--bg-main); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; padding: 10px; gap: 8px; flex-shrink: 0; }
         .main-content { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-main); padding: 16px; gap: 16px; overflow: hidden; align-items: center; justify-content: center; }
 
         .preview-container {
-            width: 100%; height: calc(100vh - 150px); background-color: transparent; border-radius: 8px;
+            width: 100%; flex: 1 1 0; min-height: 0; background-color: transparent; border-radius: 8px;
             border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
             position: relative; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
         }
@@ -175,7 +189,6 @@
     </style>
 </head>
 <body>
-    <div id="window-top-bar"></div>
     
 
     <div id="notification-modal">Pesan Notifikasi</div>
@@ -362,77 +375,73 @@
         </div>
     </div>
 
-    <div class="top-bar" style="margin-top: 12px;">
-        <div class="flex items-center gap-4">
-            <div class="logo">
-                <i class="fa-solid fa-circle-play text-yellow-400"></i>
-                <span class="logo-text-viz">TNC7 Visualizer PRO</span>
-            </div>
+    <div class="top-bar">
+        <div class="logo" title="TNC7 Visualizer PRO">
+            <i class="fa-solid fa-circle-play text-yellow-400"></i>
+            <span class="logo-text-viz">TNC7 <span class="hidden 2xl:inline">Visualizer </span>PRO</span>
         </div>
-        
-        <div class="flex items-center gap-2">
-            <button class="btn-custom" id="btnTangkapLayar" title="Simpan gambar"><i class="fa-solid fa-camera text-xs"></i> Screenshot</button>
-            <div class="w-px h-4 bg-gray-700 mx-1"></div>
-            <button class="btn-custom border-blue-500/50 text-blue-400 hover:bg-blue-500/10" id="btnBukaPresets"><i class="fa-solid fa-layer-group text-xs"></i> Presets</button>
-            <div class="w-px h-4 bg-gray-700 mx-1"></div>
-            <button class="btn-custom" onclick="document.getElementById('audioInput').click()"><i class="fa-solid fa-film text-xs"></i> + Audio/Video</button>
-            <input type="file" id="audioInput" accept="audio/*,video/*" multiple class="hidden">
-            <button class="btn-custom" id="btnHapusAudio">Hapus Media</button>
-            <div class="w-px h-4 bg-gray-700 mx-1"></div>
-            <!-- UPDATE: Tambahkan dukungan Video MP4/WebM -->
-            <button class="btn-custom" onclick="document.getElementById('bgImagePlaylistInput').click()"><i class="fa-solid fa-images text-xs"></i> + Background</button>
-            <input type="file" id="bgImagePlaylistInput" accept="image/*,video/mp4,video/webm" multiple class="hidden">
-            <button class="btn-custom" id="btnHapusImagePlaylist">Hapus BG</button>
-            <div class="w-px h-4 bg-gray-700 mx-1"></div>
-            
-            <div class="flex items-center gap-1" id="renderBitrateModeGroup">
-                <span class="text-[10px] font-bold text-gray-400 tracking-wider mr-1">KUALITAS:</span>
-                <select id="renderResSelect" class="custom-select w-[60px]" title="Resolusi Video">
+
+        <div class="tb-groups">
+            <div class="tb-group">
+                <button class="tb-btn" id="btnTangkapLayar" title="Simpan gambar (screenshot)"><i class="fa-solid fa-camera"></i><span class="hidden 2xl:inline">Screenshot</span></button>
+                <button class="tb-btn" id="btnBukaPresets" title="Manajer preset" style="color:#60a5fa"><i class="fa-solid fa-layer-group"></i>Presets</button>
+            </div>
+
+            <div class="tb-group">
+                <button class="tb-btn" onclick="document.getElementById('audioInput').click()" title="Tambah audio / video ke playlist"><i class="fa-solid fa-music"></i>Audio/Video</button>
+                <input type="file" id="audioInput" accept="audio/*,video/*" multiple class="hidden">
+                <button class="tb-btn icon-only danger" id="btnHapusAudio" title="Hapus semua media di playlist"><i class="fa-solid fa-trash-can"></i></button>
+                <button class="tb-btn" onclick="document.getElementById('bgImagePlaylistInput').click()" title="Tambah gambar / video background"><i class="fa-solid fa-images"></i>Background</button>
+                <input type="file" id="bgImagePlaylistInput" accept="image/*,video/mp4,video/webm" multiple class="hidden">
+                <button class="tb-btn icon-only danger" id="btnHapusImagePlaylist" title="Hapus semua background"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+
+            <div class="tb-group" id="renderBitrateModeGroup">
+                <span class="tb-label hidden 2xl:inline">VIDEO</span>
+                <select id="renderResSelect" class="tb-select" title="Resolusi video">
                     <option value="720">720p</option>
                     <option value="1080" selected>1080p</option>
-                    <option value="1440">1440p (2K)</option>
-                    <option value="2160">2160p (4K)</option>
+                    <option value="1440">1440p</option>
+                    <option value="2160">2160p</option>
                 </select>
-                <select id="renderFpsSelect" class="custom-select w-[60px]" title="Framerate">
-                    <option value="24">24 FPS</option>
-                    <option value="30" selected>30 FPS</option>
-                    <option value="60">60 FPS</option>
+                <select id="renderFpsSelect" class="tb-select" title="Framerate">
+                    <option value="24">24 fps</option>
+                    <option value="30" selected>30 fps</option>
+                    <option value="60">60 fps</option>
                 </select>
-                <div class="w-px h-4 bg-gray-700 mx-1"></div>
-                
-                <span class="text-[10px] font-bold text-gray-500 tracking-wider mr-1">BITRATE:</span>
-                <button class="btn-custom btn-active" data-val="variable">VBR</button>
-                <button class="btn-custom" data-val="constant">CBR</button>
-                <select id="renderBitrateSelect" class="custom-select w-[80px] ml-1">
-                    <option value="1500000">1.5 Mbps (Sangat Kecil)</option>
-                    <option value="2500000">2.5 Mbps (Kecil+Tajam)</option>
-                    <option value="3000000">3.0 Mbps</option>
-                    <option value="4000000">4.0 Mbps</option>
-                    <option value="5000000" selected>5.0 Mbps</option>
-                    <option value="6000000">6.0 Mbps</option>
-                    <option value="8000000">8.0 Mbps</option>
-                    <option value="10000000">10.0 Mbps</option>
-                    <option value="12000000">12.0 Mbps</option>
-                    <option value="24000000">24 Mbps (Super Jernih)</option>
-                    <option value="40000000">40 Mbps (Kualitas 2K)</option>
-                    <option value="60000000">60 Mbps (Kualitas 4K)</option>
-                    <option value="100000000">100 Mbps (Ultra HD)</option>
+                <button class="tb-btn btn-active" data-val="variable" title="Bitrate variabel (VBR) — file lebih efisien">VBR</button>
+                <button class="tb-btn" data-val="constant" title="Bitrate konstan (CBR)">CBR</button>
+                <select id="renderBitrateSelect" class="tb-select" title="Bitrate video">
+                    <option value="1500000">1.5 Mbps</option>
+                    <option value="2500000">2.5 Mbps</option>
+                    <option value="3000000">3 Mbps</option>
+                    <option value="4000000">4 Mbps</option>
+                    <option value="5000000" selected>5 Mbps</option>
+                    <option value="6000000">6 Mbps</option>
+                    <option value="8000000">8 Mbps</option>
+                    <option value="10000000">10 Mbps</option>
+                    <option value="12000000">12 Mbps</option>
+                    <option value="24000000">24 Mbps</option>
+                    <option value="40000000">40 Mbps</option>
+                    <option value="60000000">60 Mbps</option>
+                    <option value="100000000">100 Mbps</option>
                 </select>
-                <select id="renderAudioBitrateSelect" class="custom-select w-[62px] ml-1" title="Bitrate audio. Bila browser tak mendukung (mis. AAC Windows maks 192k), otomatis turun ke bitrate tertinggi yang didukung.">
-                    <option value="128000">🔊128k</option>
-                    <option value="192000" selected>🔊192k</option>
-                    <option value="256000">🔊256k</option>
-                    <option value="320000">🔊320k</option>
+                <span class="tb-label hidden 2xl:inline">AUDIO</span>
+                <select id="renderAudioBitrateSelect" class="tb-select" title="Bitrate audio. Bila browser tak mendukung (mis. AAC Windows maks 192k), otomatis turun ke bitrate tertinggi yang didukung.">
+                    <option value="128000">🔊 128k</option>
+                    <option value="192000" selected>🔊 192k</option>
+                    <option value="256000">🔊 256k</option>
+                    <option value="320000">🔊 320k</option>
                 </select>
-                <select id="renderMethodSelect" class="custom-select w-20 ml-1">
-                    <option value="pisah">Pisah File</option>
-                    <option value="gabung" selected>Gabung 1 Vid</option>
+                <select id="renderMethodSelect" class="tb-select" title="Pisah: 1 video per lagu. Gabung: seluruh playlist jadi 1 video.">
+                    <option value="pisah">Pisah</option>
+                    <option value="gabung" selected>Gabung</option>
                 </select>
             </div>
-            
-            <div id="uniqueness-container" class="flex flex-col ml-2 justify-center w-28 bg-gray-800/50 p-1 rounded border border-gray-700" title="Jumlah efek visual yang aktif. Ini BUKAN jaminan lolos kebijakan konten berulang (reused content) YouTube — yang dinilai YouTube adalah nilai orisinal kontennya.">
-                <div class="flex justify-between w-full mb-[2px] items-center">
-                    <span class="text-[8px] font-bold text-gray-400 tracking-wider">EFEK AKTIF:</span>
+
+            <div id="uniqueness-container" class="flex flex-col justify-center w-24 bg-gray-800/50 px-2 py-1 rounded-md border border-gray-700" title="Jumlah efek visual yang aktif. Ini BUKAN jaminan lolos kebijakan konten berulang (reused content) YouTube — yang dinilai YouTube adalah nilai orisinal kontennya.">
+                <div class="flex justify-between w-full mb-[3px] items-center">
+                    <span class="text-[8px] font-bold text-gray-400 tracking-wider whitespace-nowrap">EFEK AKTIF</span>
                     <span id="uniqueness-text" class="text-[9px] font-bold text-blue-400">0%</span>
                 </div>
                 <div class="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
@@ -440,7 +449,7 @@
                 </div>
             </div>
 
-            <button class="btn-custom bg-red-600 border-red-500 text-white ml-2" id="btnRekam">Mulai Render</button>
+            <button class="tb-render" id="btnRekam" title="Mulai render video">Mulai Render</button>
         </div>
     </div>
 
